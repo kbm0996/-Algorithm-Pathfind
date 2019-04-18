@@ -19,3 +19,12 @@
 
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
+#include <list>
+#include "CMap.h"
+#include "CAStar.h"
+
+extern HWND		g_hWnd;
+extern RECT		g_crt;
+extern HDC		g_hMemDC;
+extern HBITMAP	g_hMemBitmap;
+extern HBITMAP	g_hMemBitmapOld;
