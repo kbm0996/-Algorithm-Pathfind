@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "AStar.h"
 
+#define __PROCESS_RENDER_ // Annotation -> Exclude rendering process
+
 mylib::CAStar g_AStar;
 bool g_bCheckObstacle;
 
@@ -10,7 +12,7 @@ HDC		g_hMemDC;
 HBITMAP g_hMemBitmap;
 HBITMAP g_hMemBitmapOld;
 
-
+__int64 GetQPCTick();// LARGE_INTEGER& li);
 
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -20,6 +22,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+	timeBeginPeriod(1);
     MyRegisterClass(hInstance);
     if (!InitInstance (hInstance, nCmdShow))
         return FALSE;
@@ -46,7 +49,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 			InvalidateRect(g_hWnd, NULL, false);
 		}
 	}
+	timeEndPeriod(1);
     return (int) msg.wParam;
+}
+
+__int64 GetQPCTick()//LARGE_INTEGER& li)
+{
+	LARGE_INTEGER li;
+	QueryPerformanceCounter(&li);
+	return static_cast<__int64>(li.QuadPart);
 }
 
 ATOM MyRegisterClass(HINSTANCE hInstance)
@@ -86,15 +97,23 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	static LARGE_INTEGER li;
+	static __int64 StartTick;
+	static __int64 EndTick;
+
 	static HANDLE hTimer;
 	static bool bTimer;
+
 	POINT MousePos;
-	POINT TilePos;
 
     switch (message)
     {
 	case WM_CREATE:
 	{
+		// Init QueryPerformanceCounter
+		QueryPerformanceFrequency(&li);
+
+		// Init Rendering
 		GetClientRect(hWnd, &g_crt);
 
 		HDC hdc = GetDC(hWnd);
@@ -125,23 +144,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		g_AStar.SetStart(MousePos);
 		break;
 	case WM_RBUTTONDOWN:
+	{
+		StartTick = GetQPCTick();// li);
+#ifndef __PROCESS_RENDER_
 		// No Process
-		///g_AStar.PathFind();
+		g_AStar.PathFind();
+		EndTick = GetQPCTick();// li);
 
+		WCHAR szContent[100] = { 0, };
+		swprintf_s(szContent, L"Consumed time : %8.6f s", (float)((EndTick - StartTick) / (float)li.QuadPart));
+		MessageBox(hWnd, szContent, L"Result", MB_OK | MB_ICONINFORMATION);
+#else
 		// Process
 		g_AStar.Clear_Process();
-		hTimer = (HANDLE)SetTimer(hWnd, 1, 10, NULL);
-		SendMessage(hWnd, WM_TIMER, 1, 0);
+		hTimer = (HANDLE)SetTimer(hWnd, 1, USER_TIMER_MINIMUM, NULL); // Set Timer(ID:1)
+		SendMessage(hWnd, WM_TIMER, 1, 0); // Activate Timer(ID:1)
 		bTimer = true;
+#endif
 
 		break;
+	}
 	case WM_TIMER:
 		if (bTimer)
 		{
 			if (g_AStar.PathFind_Process())
 			{
-				KillTimer(hWnd, 1);
+				KillTimer(hWnd, 1);	// Off Timer(ID:1)
 				bTimer = false;
+				EndTick = GetQPCTick();// li);
+
+				WCHAR szContent[100] = { 0, };
+				swprintf_s(szContent, L"Consumed time : %8.6f s", (float)((EndTick - StartTick) / (float)li.QuadPart));
+				MessageBox(hWnd, szContent, L"Result", MB_OK | MB_ICONINFORMATION);
 			}
 		}
 		break;
