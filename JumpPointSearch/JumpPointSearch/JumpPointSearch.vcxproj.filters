@@ -33,13 +33,13 @@
     <ClInclude Include="stdafx.h">
       <Filter>헤더 파일\WinAPI</Filter>
     </ClInclude>
-    <ClInclude Include="CAStar.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="CMap.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="CBresenham.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CJPS.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,7 +53,10 @@
     <ClCompile Include="CMap.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="CAStar.cpp">
+    <ClCompile Include="CBresenham.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CJPS.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

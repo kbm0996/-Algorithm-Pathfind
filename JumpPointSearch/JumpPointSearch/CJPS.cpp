@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-mylib::CAStar::stTile::stTile(int x, int y, stTile * parent)
+mylib::CJPS::stArea::stArea(int x, int y, stArea * parent)
 {
 	iX = x;
 	iY = y;
@@ -10,7 +10,7 @@ mylib::CAStar::stTile::stTile(int x, int y, stTile * parent)
 	pParent = parent;
 }
 
-mylib::CAStar::stTile::stTile(stTile &copy)
+mylib::CJPS::stArea::stArea(stArea &copy)
 {
 	iX = copy.iX;
 	iY = copy.iY;
@@ -20,7 +20,7 @@ mylib::CAStar::stTile::stTile(stTile &copy)
 	pParent = copy.pParent;
 }
 
-mylib::CAStar::CAStar(int iMapWidth, int iMapHeight)
+mylib::CJPS::CJPS(int iMapWidth, int iMapHeight)
 {
 	_StartPos.iX = 0;
 	_StartPos.iY = 0;
@@ -32,7 +32,7 @@ mylib::CAStar::CAStar(int iMapWidth, int iMapHeight)
 	_bStart = true;
 }
 
-mylib::CAStar::CAStar(CMap& pMap)
+mylib::CJPS::CJPS(CMap& pMap)
 {
 	_StartPos.iX = 0;
 	_StartPos.iY = 0;
@@ -44,26 +44,26 @@ mylib::CAStar::CAStar(CMap& pMap)
 	_bStart = true;
 }
 
-mylib::CAStar::~CAStar()
+mylib::CJPS::~CJPS()
 {
 	delete _pMap;
 }
 
-void mylib::CAStar::SetStart(POINT mousepos)
+void mylib::CJPS::SetStart(POINT mousepos)
 {
 	POINT temp = _pMap->GetTilePos(mousepos);
 	_StartPos.iX = temp.x;
 	_StartPos.iY = temp.y;
 }
 
-void mylib::CAStar::SetDest(POINT mousepos)
+void mylib::CJPS::SetDest(POINT mousepos)
 {
 	POINT temp = _pMap->GetTilePos(mousepos);
 	_DestPos.iX = temp.x;
 	_DestPos.iY = temp.y;
 }
 
-bool mylib::CAStar::PathFind()
+bool mylib::CJPS::PathFind()
 {
 	for (auto iter = _Openlst.begin(); iter != _Openlst.end(); ++iter)
 		delete *iter;
@@ -76,13 +76,13 @@ bool mylib::CAStar::PathFind()
 
 	_isRoute = FALSE;
 
-	_pStartPos_Temp = new stTile(_StartPos);
+	_pStartPos_Temp = new stArea(_StartPos);
 	_Openlst.push_back(_pStartPos_Temp);
 	while (_Openlst.size() != 0)
 	{
-		_Openlst.sort(CAStar::compFormula);
+		_Openlst.sort(CJPS::compFormula);
 
-		stTile* pCurrent = _Openlst.front();
+		stArea* pCurrent = _Openlst.front();
 		if (pCurrent == nullptr)
 			break;
 
@@ -100,7 +100,7 @@ bool mylib::CAStar::PathFind()
 	return false;
 }
 
-void mylib::CAStar::Clear_Process()
+void mylib::CJPS::Clear_Process()
 {
 	for (auto iter = _Openlst.begin(); iter != _Openlst.end(); ++iter)
 		delete *iter;
@@ -115,19 +115,19 @@ void mylib::CAStar::Clear_Process()
 	_bStart = true;
 }
 
-bool mylib::CAStar::PathFind_Process()
+bool mylib::CJPS::PathFind_Process()
 {
 	if (_bStart)
 	{
-		_pStartPos_Temp = new stTile(_StartPos);
+		_pStartPos_Temp = new stArea(_StartPos);
 		_Openlst.push_back(_pStartPos_Temp);
 		_bStart = false;
 		return false;
 	}
 
-	_Openlst.sort(CAStar::compFormula);
+	_Openlst.sort(CJPS::compFormula);
 
-	stTile* pCurrent = _Openlst.front();
+	stArea* pCurrent = _Openlst.front();
 	if (pCurrent == nullptr)	// Fail
 		return true;
 
@@ -145,12 +145,12 @@ bool mylib::CAStar::PathFind_Process()
 	return false;
 }
 
-mylib::CMap * mylib::CAStar::GetMap()
+mylib::CMap * mylib::CJPS::GetMap()
 {
 	return _pMap;
 }
 
-void mylib::CAStar::DrawPath(HDC hdc)
+void mylib::CJPS::DrawPath(HDC hdc)
 {
 	// OpenList 
 	HBRUSH hBrush = CreateSolidBrush(0xff0000); //blue
@@ -191,7 +191,7 @@ void mylib::CAStar::DrawPath(HDC hdc)
 	HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 	if (_isRoute)
 	{
-		stTile* pTemp = _Openlst.front();// peek_front();
+		stArea* pTemp = _Openlst.front();// peek_front();
 		while (pTemp->pParent != nullptr)
 		{
 			MoveToEx(hdc, (pTemp->iX) * CMap::en_TILE_WIDTH + CMap::en_TILE_WIDTH / 2, (pTemp->iY) * CMap::en_TILE_HEIGHT + CMap::en_TILE_HEIGHT / 2, NULL);
@@ -203,7 +203,7 @@ void mylib::CAStar::DrawPath(HDC hdc)
 	DeleteObject(hPen);
 }
 
-mylib::CAStar::stTile * mylib::CAStar::SearchOpenlst(int iX, int iY)
+mylib::CJPS::stArea * mylib::CJPS::SearchOpenlst(int iX, int iY)
 {
 	for (auto iter = _Openlst.begin(); iter != _Openlst.end(); ++iter)
 	{
@@ -213,7 +213,7 @@ mylib::CAStar::stTile * mylib::CAStar::SearchOpenlst(int iX, int iY)
 	return nullptr;
 }
 
-mylib::CAStar::stTile * mylib::CAStar::SearchCloselst(int iX, int iY)
+mylib::CJPS::stArea * mylib::CJPS::SearchCloselst(int iX, int iY)
 {
 	for (auto iter = _Closelst.begin(); iter != _Closelst.end(); ++iter)
 	{
@@ -224,7 +224,7 @@ mylib::CAStar::stTile * mylib::CAStar::SearchCloselst(int iX, int iY)
 }
 
 
-BOOL mylib::CAStar::CheckTile(int iX, int iY)
+BOOL mylib::CJPS::CheckTile(int iX, int iY)
 {
 	// Check Range
 	if (iX < 0 || iX >= _pMap->_iWidth ||
@@ -238,10 +238,10 @@ BOOL mylib::CAStar::CheckTile(int iX, int iY)
 	return TRUE;
 }
 
-BOOL mylib::CAStar::CheckTile_Around(stTile * current)
+BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 {
 	BOOL retval = FALSE;
-	stTile* pTemp;
+	stArea* pTemp;
 
 	// 8
 	if (CheckTile(current->iX, current->iY + 1) && !SearchCloselst(current->iX, current->iY + 1))
@@ -249,7 +249,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX, current->iY + 1);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX, current->iY + 1, current);
+			pTemp = new stArea(current->iX, current->iY + 1, current);
 			pTemp->G = current->G + 10;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -275,7 +275,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX + 1, current->iY);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX + 1, current->iY, current);
+			pTemp = new stArea(current->iX + 1, current->iY, current);
 			pTemp->G = current->G + 10;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -301,7 +301,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX, current->iY - 1);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX, current->iY - 1, current);
+			pTemp = new stArea(current->iX, current->iY - 1, current);
 			pTemp->G = current->G + 10;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -327,7 +327,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX - 1, current->iY);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX - 1, current->iY, current);
+			pTemp = new stArea(current->iX - 1, current->iY, current);
 			pTemp->G = current->G + 10;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -352,7 +352,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX + 1, current->iY + 1);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX + 1, current->iY + 1, current);
+			pTemp = new stArea(current->iX + 1, current->iY + 1, current);
 			pTemp->G = current->G + 14;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -378,7 +378,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX + 1, current->iY - 1);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX + 1, current->iY - 1, current);
+			pTemp = new stArea(current->iX + 1, current->iY - 1, current);
 			pTemp->G = current->G + 14;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -403,7 +403,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX - 1, current->iY - 1);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX - 1, current->iY - 1, current);
+			pTemp = new stArea(current->iX - 1, current->iY - 1, current);
 			pTemp->G = current->G + 14;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -429,7 +429,7 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 		pTemp = SearchOpenlst(current->iX - 1, current->iY + 1);
 		if (!pTemp)
 		{
-			pTemp = new stTile(current->iX - 1, current->iY + 1, current);
+			pTemp = new stArea(current->iX - 1, current->iY + 1, current);
 			pTemp->G = current->G + 14;
 			pTemp->H = GetDistance(pTemp, &_DestPos);
 			pTemp->F = pTemp->G + pTemp->H;
@@ -451,12 +451,12 @@ BOOL mylib::CAStar::CheckTile_Around(stTile * current)
 	return retval;
 }
 
-float mylib::CAStar::GetDistance(const stTile * from, const stTile * to)
+float mylib::CJPS::GetDistance(const stArea * from, const stArea * to)
 {
 	return 10 * (abs(from->iX - to->iX) + abs(from->iY - to->iY));
 }
 
-bool mylib::CAStar::compFormula(const stTile * a, const stTile * b)
+bool mylib::CJPS::compFormula(const stArea * a, const stArea * b)
 {
 	return a->F < b->F;
 }

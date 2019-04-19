@@ -3,7 +3,7 @@
 
 #define __PROCESS_RENDER_ // Annotation -> Exclude rendering process
 
-mylib::CAStar g_AStar;
+mylib::CJPS g_AStar;
 bool g_bCheckObstacle;
 
 HWND	g_hWnd;
@@ -73,7 +73,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_JUMPPOINTSEARCH);
-	wcex.lpszClassName = L"A*";
+	wcex.lpszClassName = L"JumpPointSearch";
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
@@ -81,7 +81,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-	g_hWnd = CreateWindowW(L"A*", L"A*", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+	g_hWnd = CreateWindowW(L"JumpPointSearch", L"JumpPointSearch", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 	if (!g_hWnd)
 	{
 		return FALSE;

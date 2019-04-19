@@ -24,6 +24,6 @@
 #include <list>
 #include "CBresenham.h"
 #include "CMap.h"
-#include "CAStar.h"
+#include "CJPS.h"
 
 //extern HWND		g_hWnd;

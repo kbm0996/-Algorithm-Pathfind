@@ -4,23 +4,23 @@
 
 namespace mylib
 {
-	class CAStar
+	class CJPS
 	{
 	public:
-		struct stTile
+		struct stArea
 		{
-			stTile(int x = 0, int y = 0, stTile* parent = nullptr);
-			stTile(stTile &copy);
+			stArea(int x = 0, int y = 0, stArea* parent = nullptr);
+			stArea(stArea &copy);
 			int iX, iY;
 			float G;	// Move Cnt
 			float H;	// Distance to Destinationn Point
 			float F;	// G + H
-			stTile* pParent;
+			stArea* pParent;
 		};
 
-		CAStar(int iMapWidth = 90, int iMapHeight = 40);
-		CAStar(CMap& pMap);
-		virtual ~CAStar();
+		CJPS(int iMapWidth = 90, int iMapHeight = 40);
+		CJPS(CMap& pMap);
+		virtual ~CJPS();
 
 		// Conversion MousePos to MapPos 
 		void SetStart(POINT mousepos);
@@ -42,24 +42,24 @@ namespace mylib
 		void DrawPath(HDC hdc);
 
 	protected:
-		stTile* SearchOpenlst(int iX, int iY);
-		stTile* SearchCloselst(int iX, int iY);
+		stArea* SearchOpenlst(int iX, int iY);
+		stArea* SearchCloselst(int iX, int iY);
 
 		BOOL CheckTile(int iX, int iY);
-		BOOL CheckTile_Around(stTile * current);
+		BOOL CheckTile_Around(stArea * current);
 
-		float mylib::CAStar::GetDistance(const stTile * from, const stTile * to);
+		float mylib::CJPS::GetDistance(const stArea * from, const stArea * to);
 
 	private:
-		static bool compFormula(const stTile* a, const stTile *b);
+		static bool compFormula(const stArea* a, const stArea *b);
 
 		CMap* _pMap;
-		std::list<stTile*> _Openlst;
-		std::list<stTile*> _Closelst;
+		std::list<stArea*> _Openlst;
+		std::list<stArea*> _Closelst;
 
-		stTile _StartPos;
-		stTile _DestPos;
-		stTile * _pStartPos_Temp;
+		stArea _StartPos;
+		stArea _DestPos;
+		stArea * _pStartPos_Temp;
 
 		bool _bStart;
 		bool _isRoute;
