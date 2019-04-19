@@ -121,7 +121,7 @@ bool mylib::CMap::CheckObstacle(POINT mousepos)
 
 void mylib::CMap::SetObstacle(POINT mousepos, bool isObstacle)
 {
-	WCHAR chTest[20];
+	//WCHAR chTest[20];
 	RECT rect;
 	if (isObstacle == true)
 	{
@@ -132,8 +132,8 @@ void mylib::CMap::SetObstacle(POINT mousepos, bool isObstacle)
 				rect = { iCntW*en_TILE_WIDTH, iCntH*en_TILE_HEIGHT, (en_TILE_WIDTH + 1) + iCntW*en_TILE_WIDTH, (en_TILE_HEIGHT + 1) + iCntH*en_TILE_HEIGHT };
 				if (PtInRect(&rect, mousepos))
 				{
-					wsprintf(chTest, L"x, y : %d, %d", iCntW, iCntH);
-					SetWindowTextW(g_hWnd, chTest);
+					//wsprintf(chTest, L"x, y : %d, %d", iCntW, iCntH);
+					//SetWindowTextW(g_hWnd, chTest);
 
 					if (_pMap[iCntH][iCntW] == TRUE)
 					{
@@ -153,8 +153,8 @@ void mylib::CMap::SetObstacle(POINT mousepos, bool isObstacle)
 				rect = { iCntW*en_TILE_WIDTH, iCntH*en_TILE_HEIGHT, (en_TILE_WIDTH + 1) + iCntW*en_TILE_WIDTH, (en_TILE_HEIGHT + 1) + iCntH*en_TILE_HEIGHT };
 				if (PtInRect(&rect, mousepos))
 				{
-					wsprintf(chTest, L"x, y : %d, %d", iCntW, iCntH);
-					SetWindowTextW(g_hWnd, chTest);
+					//wsprintf(chTest, L"x, y : %d, %d", iCntW, iCntH);
+					//SetWindowTextW(g_hWnd, chTest);
 
 					if (_pMap[iCntH][iCntW] == FALSE)
 					{
