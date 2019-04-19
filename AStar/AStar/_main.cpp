@@ -12,13 +12,11 @@ HDC		g_hMemDC;
 HBITMAP g_hMemBitmap;
 HBITMAP g_hMemBitmapOld;
 
-__int64 GetQPCTick();// LARGE_INTEGER& li);
+__int64 GetQPCTick();
 
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-
-// TODO : PathFind_Process
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
@@ -169,9 +167,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (g_AStar.PathFind_Process())
 			{
-				KillTimer(hWnd, 1);	// Off Timer(ID:1)
 				bTimer = false;
-				EndTick = GetQPCTick();// li);
+				KillTimer(hWnd, 1);	// Off Timer(ID:1)
+				EndTick = GetQPCTick();
 
 				WCHAR szContent[100] = { 0, };
 				swprintf_s(szContent, L"Consumed time : %8.6f s", (float)((EndTick - StartTick) / (float)li.QuadPart));
