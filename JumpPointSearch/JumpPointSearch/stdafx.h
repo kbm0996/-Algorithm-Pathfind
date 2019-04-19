@@ -22,5 +22,12 @@
 #include <mmsystem.h>
 #pragma comment(lib, "Winmm.lib")
 #include <list>
+#include "CBresenham.h"
 #include "CMap.h"
 #include "CAStar.h"
+
+extern HWND		g_hWnd;
+extern RECT		g_crt;
+extern HDC		g_hMemDC;
+extern HBITMAP	g_hMemBitmap;
+extern HBITMAP	g_hMemBitmapOld;
