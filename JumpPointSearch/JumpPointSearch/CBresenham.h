@@ -1,32 +1,61 @@
-#ifndef __BRESENHA__
-#define __BRESENHA__
+#ifndef __BRESENHAM__
+#define __BRESENHAM__
 
 namespace mylib
 {
 	class CBresenham
 	{
 	public:
-		enum en_RETURN_SETPOSITION
-		{
-			en_POS_SAME = 0,
-			en_LEN_SAME,
-			en_LEN_Y_LESS,
-			en_LEN_X_LESS,
-		};
+		////////////////////////////////////////////////////////////
+		// 생성자, 소멸자
+		//  내부에서 SetPosition() 호출
+		//
+		// Parameters : (int) 시작 x
+		//				(int) 시작 y
+		//				(int) 목표 x
+		//				(int) 목표 y
+		// Return :		
+		////////////////////////////////////////////////////////////
+		CBresenham(int iStartX = 0, int iStartY = 0, int iDestX = 0, int iDestY = 0);
+		~CBresenham() {}
 
-		CBresenham(int iStartX, int iStartY, int iDestX, int iDestY);
-		~CBresenham();
-		int SetPosition(int iStartX, int iStartY, int iDestX, int iDestY);
-		bool GetNext(int &iX, int &iY);
-		bool PeekNext(int &iX, int &iY);
+		////////////////////////////////////////////////////////////
+		// 브레즌헴을 적용할 시작 좌표, 목표 좌표 설정
+		//
+		// Parameters : (int) 시작 x
+		//				(int) 시작 y
+		//				(int) 목표 x
+		//				(int) 목표 y
+		// Return :		
+		////////////////////////////////////////////////////////////
+		void SetPosition(int iStartX, int iStartY, int iDestX, int iDestY);
+		
+		////////////////////////////////////////////////////////////
+		// 다음 좌표 뽑기
+		//
+		// Parameters : (int) __out__ x
+		//				(int) __out__ y
+		// Return :		
+		////////////////////////////////////////////////////////////
+		bool GetNext(int * x, int * y);
+
+		////////////////////////////////////////////////////////////
+		// 다음 좌표 얻기
+		//
+		// Parameters : (int) __out__ x
+		//				(int) __out__ y
+		// Return :		
+		////////////////////////////////////////////////////////////
+		bool PeekNext(int * x, int * y);
 
 	private:
-		POINT _stStart;
-		POINT _stDest;
+		POINT _ptStart;
+		POINT _ptDest;
 		int _iDistanceX;
 		int _iDistanceY;
-		std::list<POINT> _Pointlst;
+		int _iIncreaseX;
+		int _iIncreaseY;
+		int _iMargin;
 	};
 }
-
 #endif

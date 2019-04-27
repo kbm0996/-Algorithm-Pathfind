@@ -41,7 +41,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		{
 			PatBlt(g_hMemDC, 0, 0, g_crt.right, g_crt.bottom, WHITENESS);
 
-			g_AStar.GetMap()->DrawMap(g_hMemDC);
+			g_AStar._pCMap->DrawMap(g_hMemDC);
 			g_AStar.DrawPath(g_hMemDC);
 
 			InvalidateRect(g_hWnd, NULL, false);
@@ -104,8 +104,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	POINT MousePos;
 
-    switch (message)
-    {
+	switch (message)
+	{
 	case WM_CREATE:
 	{
 		// Init QueryPerformanceCounter
@@ -128,13 +128,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			MousePos.x = GET_X_LPARAM(lParam);
 			MousePos.y = GET_Y_LPARAM(lParam);
-			g_AStar.GetMap()->SetObstacle(MousePos, g_bCheckObstacle);
+			g_AStar._pCMap->SetObstacle(MousePos, g_bCheckObstacle);
 		}
 		break;
 	case WM_LBUTTONDOWN:
 		MousePos.x = GET_X_LPARAM(lParam);
 		MousePos.y = GET_Y_LPARAM(lParam);
-		g_bCheckObstacle = g_AStar.GetMap()->CheckObstacle(MousePos);
+		g_bCheckObstacle = g_AStar._pCMap->CheckObstacle(MousePos);
 		break;
 	case WM_LBUTTONDBLCLK:
 		MousePos.x = GET_X_LPARAM(lParam);
@@ -142,6 +142,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		g_AStar.SetStart(MousePos);
 		break;
 	case WM_RBUTTONDOWN:
+		MousePos.x = GET_X_LPARAM(lParam);
+		MousePos.y = GET_Y_LPARAM(lParam);
+		g_AStar.SetDest(MousePos);
+		break;
+	case WM_RBUTTONDBLCLK:
 	{
 		StartTick = GetQPCTick();// li);
 #ifndef __PROCESS_RENDER_
@@ -159,7 +164,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SendMessage(hWnd, WM_TIMER, 1, 0); // Activate Timer(ID:1)
 		bTimer = true;
 #endif
-
 		break;
 	}
 	case WM_TIMER:
@@ -177,17 +181,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
-	case WM_RBUTTONDBLCLK:
-		MousePos.x = GET_X_LPARAM(lParam);
-		MousePos.y = GET_Y_LPARAM(lParam);
-		g_AStar.SetDest(MousePos);
-		break;
 	case WM_COMMAND:
 	{
 		switch (LOWORD(wParam))
 		{
 		case ID_RESET:
-			g_AStar.GetMap()->ResetObstacle();
+			g_AStar._pCMap->ResetObstacle();
 			break;
 		}
 		break;

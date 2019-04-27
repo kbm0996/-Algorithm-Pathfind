@@ -5,12 +5,11 @@ mylib::CMap::CMap(int iWidth, int iHeight)
 	_iWidth = iWidth;
 	_iHeight = iHeight;
 
-	_pMap = (char**)malloc(sizeof(char**)*iHeight);
-	memset(_pMap, TRUE, sizeof(char*)*iHeight);
+	_pMap = (char**)malloc(sizeof(char*)*iHeight);
 	for (int i = 0; i < iHeight; ++i)
 	{
-		_pMap[i] = (char*)malloc(sizeof(char*)*iWidth);
-		memset(_pMap[i], TRUE, sizeof(char*)*iWidth);
+		_pMap[i] = (char*)malloc(sizeof(char)*iWidth);	
+		memset(_pMap[i], TRUE, sizeof(char)*iWidth);
 	}
 }
 
@@ -19,12 +18,11 @@ mylib::CMap::CMap(const CMap & cpy)
 	_iWidth = cpy._iWidth;
 	_iHeight = cpy._iHeight;
 
-	_pMap = (char**)malloc(sizeof(char**)*_iHeight);
-	memcpy_s(_pMap, sizeof(char*)*_iHeight, cpy._pMap, sizeof(char*)*_iHeight);
+	_pMap = (char**)malloc(sizeof(char*)*_iHeight);
 	for (int i = 0; i < _iHeight; ++i)
 	{
-		_pMap[i] = (char*)malloc(sizeof(char*)*_iWidth);
-		memcpy_s(_pMap[i], sizeof(char*)*_iWidth, cpy._pMap[i], sizeof(char*)*_iWidth);
+		_pMap[i] = (char*)malloc(sizeof(char)*_iWidth);
+		memcpy_s(_pMap[i], sizeof(char)*_iWidth, cpy._pMap[i], sizeof(char)*_iWidth);
 	}
 }
 

@@ -3,8 +3,8 @@
 
 #define __PROCESS_RENDER_ // Annotation -> Exclude rendering process
 
-mylib::CJPS g_AStar;
-bool g_bCheckObstacle;
+mylib::CJPS g_JPS;
+BOOL g_bCheckObstacle;
 
 HWND	g_hWnd;
 RECT	g_crt;
@@ -21,6 +21,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
 	timeBeginPeriod(1);
+	srand((unsigned)time(NULL));
+
 	MyRegisterClass(hInstance);
 	if (!InitInstance(hInstance, nCmdShow))
 		return FALSE;
@@ -41,8 +43,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		{
 			PatBlt(g_hMemDC, 0, 0, g_crt.right, g_crt.bottom, WHITENESS);
 
-			g_AStar.GetMap()->DrawMap(g_hMemDC);
-			g_AStar.DrawPath(g_hMemDC);
+			g_JPS._pCMap->DrawMap(g_hMemDC);
+			g_JPS.DrawPath(g_hMemDC);
 
 			InvalidateRect(g_hWnd, NULL, false);
 		}
@@ -128,25 +130,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			MousePos.x = GET_X_LPARAM(lParam);
 			MousePos.y = GET_Y_LPARAM(lParam);
-			g_AStar.GetMap()->SetObstacle(MousePos, g_bCheckObstacle);
+			g_JPS._pCMap->SetObstacle(MousePos, g_bCheckObstacle);
 		}
 		break;
 	case WM_LBUTTONDOWN:
 		MousePos.x = GET_X_LPARAM(lParam);
 		MousePos.y = GET_Y_LPARAM(lParam);
-		g_bCheckObstacle = g_AStar.GetMap()->CheckObstacle(MousePos);
+		g_bCheckObstacle = g_JPS._pCMap->CheckObstacle(MousePos);
 		break;
 	case WM_LBUTTONDBLCLK:
 		MousePos.x = GET_X_LPARAM(lParam);
 		MousePos.y = GET_Y_LPARAM(lParam);
-		g_AStar.SetStart(MousePos);
+		g_JPS.SetStart(MousePos);
 		break;
 	case WM_RBUTTONDOWN:
+		MousePos.x = GET_X_LPARAM(lParam);
+		MousePos.y = GET_Y_LPARAM(lParam);
+		g_JPS.SetDest(MousePos);
+		break;
+	case WM_RBUTTONDBLCLK:
 	{
 		StartTick = GetQPCTick();// li);
 #ifndef __PROCESS_RENDER_
 								 // No Process
-		g_AStar.PathFind();
+		g_JPS.PathFind();
 		EndTick = GetQPCTick();// li);
 
 		WCHAR szContent[100] = { 0, };
@@ -154,7 +161,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		MessageBox(hWnd, szContent, L"Result", MB_OK | MB_ICONINFORMATION);
 #else
 								 // Process
-		g_AStar.Clear_Process();
+		g_JPS.Clear();
 		hTimer = (HANDLE)SetTimer(hWnd, 1, USER_TIMER_MINIMUM, NULL); // Set Timer(ID:1)
 		SendMessage(hWnd, WM_TIMER, 1, 0); // Activate Timer(ID:1)
 		bTimer = true;
@@ -165,7 +172,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 		if (bTimer)
 		{
-			if (g_AStar.PathFind_Process())
+			if (g_JPS.PathFind_Process(g_hMemDC))
 			{
 				bTimer = false;
 				KillTimer(hWnd, 1);	// Off Timer(ID:1)
@@ -177,17 +184,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
-	case WM_RBUTTONDBLCLK:
-		MousePos.x = GET_X_LPARAM(lParam);
-		MousePos.y = GET_Y_LPARAM(lParam);
-		g_AStar.SetDest(MousePos);
-		break;
 	case WM_COMMAND:
 	{
 		switch (LOWORD(wParam))
 		{
 		case ID_RESET:
-			g_AStar.GetMap()->ResetObstacle();
+			g_JPS._pCMap->ResetObstacle();
 			break;
 		}
 		break;

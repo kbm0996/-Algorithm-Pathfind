@@ -26,7 +26,7 @@ mylib::CAStar::CAStar(int iMapWidth, int iMapHeight)
 	_StartPos.iY = 0;
 	_DestPos.iX = 0;
 	_DestPos.iY = 0;
-	_pMap = new CMap(iMapWidth, iMapHeight);
+	_pCMap = new CMap(iMapWidth, iMapHeight);
 
 	_isRoute = FALSE;
 	_bStart = true;
@@ -38,7 +38,7 @@ mylib::CAStar::CAStar(CMap& pMap)
 	_StartPos.iY = 0;
 	_DestPos.iX = 0;
 	_DestPos.iY = 0;
-	_pMap = new CMap(pMap);
+	_pCMap = new CMap(pMap);
 
 	_isRoute = FALSE;
 	_bStart = true;
@@ -46,19 +46,19 @@ mylib::CAStar::CAStar(CMap& pMap)
 
 mylib::CAStar::~CAStar()
 {
-	delete _pMap;
+	delete _pCMap;
 }
 
 void mylib::CAStar::SetStart(POINT mousepos)
 {
-	POINT temp = _pMap->GetTilePos(mousepos);
+	POINT temp = _pCMap->GetTilePos(mousepos);
 	_StartPos.iX = temp.x;
 	_StartPos.iY = temp.y;
 }
 
 void mylib::CAStar::SetDest(POINT mousepos)
 {
-	POINT temp = _pMap->GetTilePos(mousepos);
+	POINT temp = _pCMap->GetTilePos(mousepos);
 	_DestPos.iX = temp.x;
 	_DestPos.iY = temp.y;
 }
@@ -86,10 +86,10 @@ bool mylib::CAStar::PathFind()
 		if (pCurrent == nullptr)
 			break;
 
-		if (SearchOpenlst(_DestPos.iX, _DestPos.iY))
+		if (SearchOpenlst(_DestPos.iX, _DestPos.iY) != nullptr)
 		{
 			_isRoute = TRUE;
-			break;
+			return true;
 		}
 
 		_Closelst.push_back(_Openlst.front());
@@ -131,7 +131,7 @@ bool mylib::CAStar::PathFind_Process()
 	if (pCurrent == nullptr)	// Fail
 		return true;
 
-	if (SearchOpenlst(_DestPos.iX, _DestPos.iY))
+	if (SearchOpenlst(_DestPos.iX, _DestPos.iY) != nullptr)
 	{
 		_isRoute = true;		// Success
 		return true;
@@ -143,11 +143,6 @@ bool mylib::CAStar::PathFind_Process()
 	CheckTile_Around(pCurrent);
 
 	return false;
-}
-
-mylib::CMap * mylib::CAStar::GetMap()
-{
-	return _pMap;
 }
 
 void mylib::CAStar::DrawPath(HDC hdc)
@@ -227,12 +222,12 @@ mylib::CAStar::stArea * mylib::CAStar::SearchCloselst(int iX, int iY)
 BOOL mylib::CAStar::CheckTile(int iX, int iY)
 {
 	// Check Range
-	if (iX < 0 || iX >= _pMap->_iWidth || 
-		iY < 0 || iY >= _pMap->_iHeight)
+	if (iX < 0 || iX >= _pCMap->_iWidth ||
+		iY < 0 || iY >= _pCMap->_iHeight)
 		return FALSE;
 
 	// Check Obstacle
-	if (_pMap->_pMap[iY][iX] == FALSE)
+	if (_pCMap->_pMap[iY][iX] == FALSE)
 		return FALSE;
 
 	return TRUE;
