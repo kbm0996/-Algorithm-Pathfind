@@ -143,7 +143,7 @@ bool mylib::CJPS::PathFind(HDC hdc, bool bBresenham, int iCheckRangeCnt, bool bD
 		if(bDomainMark)
 			RandColor_JumpDomain();
 		
-		CheckTile_Around(pCurrent);
+		CheckTile_Around(pCurrent, bDomainMark);
 	}
 	return false;
 }
@@ -180,7 +180,7 @@ bool mylib::CJPS::PathFind_Process(HDC hdc, bool bBresenham, int iCheckRangeCnt,
 	if(bDomainMark)
 		RandColor_JumpDomain();
 
-	CheckTile_Around(pCurrent);
+	CheckTile_Around(pCurrent, bDomainMark);
 	return false;
 }
 
@@ -297,18 +297,20 @@ void mylib::CJPS::Clear()
 	_DestPos_Mark = _DestPos;
 }
 
-BOOL mylib::CJPS::Jump(int iX, int iY, en_DIR_JUMP enDir, int * pOutX, int * pOutY)
+BOOL mylib::CJPS::Jump(int iX, int iY, en_DIR_JUMP enDir, int * pOutX, int * pOutY, bool bDomainMark)
 {
 	while (1)
 	{
 		if (!isWalkable(iX, iY))
 			return FALSE;
 
-		_pCMap->_pMap[iY][iX].bMark = true;
-		_pCMap->_pMap[iY][iX].byR = _byR;
-		_pCMap->_pMap[iY][iX].byG = _byG;
-		_pCMap->_pMap[iY][iX].byB = _byB;
-
+		if (bDomainMark)
+		{
+			_pCMap->_pMap[iY][iX].bMark = true;
+			_pCMap->_pMap[iY][iX].byR = _byR;
+			_pCMap->_pMap[iY][iX].byG = _byG;
+			_pCMap->_pMap[iY][iX].byB = _byB;
+		}
 
 		if (iX == _DestPos.iX && iY == _DestPos.iY)
 		{
@@ -368,8 +370,8 @@ BOOL mylib::CJPS::Jump(int iX, int iY, en_DIR_JUMP enDir, int * pOutX, int * pOu
 				return TRUE;
 			}
 
-			if (Jump(iX, iY - 1, en_DIR_UU, pOutX, pOutY) ||
-				Jump(iX + 1, iY, en_DIR_RR, pOutX, pOutY))
+			if (Jump(iX, iY - 1, en_DIR_UU, pOutX, pOutY, bDomainMark) ||
+				Jump(iX + 1, iY, en_DIR_RR, pOutX, pOutY, bDomainMark))
 			{
 				*pOutX = iX;
 				*pOutY = iY;
@@ -386,8 +388,8 @@ BOOL mylib::CJPS::Jump(int iX, int iY, en_DIR_JUMP enDir, int * pOutX, int * pOu
 				return TRUE;
 			}
 
-			if (Jump(iX, iY + 1, en_DIR_DD, pOutX, pOutY) ||
-				Jump(iX + 1, iY, en_DIR_RR, pOutX, pOutY))
+			if (Jump(iX, iY + 1, en_DIR_DD, pOutX, pOutY, bDomainMark) ||
+				Jump(iX + 1, iY, en_DIR_RR, pOutX, pOutY, bDomainMark))
 			{
 				*pOutX = iX;
 				*pOutY = iY;
@@ -403,8 +405,8 @@ BOOL mylib::CJPS::Jump(int iX, int iY, en_DIR_JUMP enDir, int * pOutX, int * pOu
 				*pOutY = iY;
 				return TRUE;
 			}
-			if (Jump(iX, iY + 1, en_DIR_DD, pOutX, pOutY) ||
-				Jump(iX - 1, iY, en_DIR_LL, pOutX, pOutY))
+			if (Jump(iX, iY + 1, en_DIR_DD, pOutX, pOutY, bDomainMark) ||
+				Jump(iX - 1, iY, en_DIR_LL, pOutX, pOutY, bDomainMark))
 			{
 				*pOutX = iX;
 				*pOutY = iY;
@@ -420,8 +422,8 @@ BOOL mylib::CJPS::Jump(int iX, int iY, en_DIR_JUMP enDir, int * pOutX, int * pOu
 				*pOutY = iY;
 				return TRUE;
 			}
-			if (Jump(iX, iY - 1, en_DIR_UU, pOutX, pOutY) ||
-				Jump(iX - 1, iY, en_DIR_LL, pOutX, pOutY))
+			if (Jump(iX, iY - 1, en_DIR_UU, pOutX, pOutY, bDomainMark) ||
+				Jump(iX - 1, iY, en_DIR_LL, pOutX, pOutY, bDomainMark))
 			{
 				*pOutX = iX;
 				*pOutY = iY;
@@ -435,7 +437,7 @@ BOOL mylib::CJPS::Jump(int iX, int iY, en_DIR_JUMP enDir, int * pOutX, int * pOu
 	return FALSE;
 }
 
-BOOL mylib::CJPS::CheckTile_Around(stArea * current)
+BOOL mylib::CJPS::CheckTile_Around(stArea * current, bool bDomainMark)
 {
 	stArea* pTemp;
 	int iJumpX = 0;
@@ -444,7 +446,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 	// * Start Case :: If the current node is the starting node
 	if (current->pParent == nullptr)
 	{
-		if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX, current->iY - 1))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -466,7 +468,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 		}
-		if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX, current->iY + 1))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -488,7 +490,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 		}
-		if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX - 1, current->iY))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -510,7 +512,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 		}
-		if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX + 1, current->iY))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -532,7 +534,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 		}
-		if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX + 1, current->iY - 1))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -554,7 +556,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 		}
-		if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX + 1, current->iY + 1))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -576,7 +578,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 		}
-		if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX - 1, current->iY + 1))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -598,7 +600,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 		}
-		if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY) &&
+		if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY, bDomainMark) &&
 			!SearchCloselst(current->iX - 1, current->iY - 1))
 		{
 			pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -634,7 +636,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// UU
 		if ((current->pParent)->iY - current->iY > 0)	// 부모가 DD 방향이면 
 		{
-			if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX, current->iY - 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -655,7 +657,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 						pTemp->pParent = current;
 					}
 				}
-				if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX, current->iY))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -679,7 +681,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 			if (!isWalkable(current->iX - 1, current->iY) && isWalkable(current->iX - 1, current->iY - 1))
-				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -702,7 +704,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			if (!isWalkable(current->iX + 1, current->iY) && isWalkable(current->iX + 1, current->iY - 1))
-				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -729,7 +731,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// DD
 		if ((current->pParent)->iY - current->iY < 0)
 		{
-			if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX, current->iY + 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -752,7 +754,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 			if (!isWalkable(current->iX - 1, current->iY) && isWalkable(current->iX - 1, current->iY + 1))
-				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -775,7 +777,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			if (!isWalkable(current->iX + 1, current->iY) && isWalkable(current->iX + 1, current->iY + 1))
-				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -805,7 +807,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// RR
 		if ((current->pParent)->iY - current->iY == 0)	// 부모가 LL 방향이면 
 		{
-			if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX + 1, current->iY))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -828,7 +830,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 			if (!isWalkable(current->iX, current->iY - 1) && isWalkable(current->iX + 1, current->iY - 1))
-				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -851,7 +853,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			if (!isWalkable(current->iX, current->iY + 1) && isWalkable(current->iX + 1, current->iY + 1))
-				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -878,7 +880,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// UR
 		if ((current->pParent)->iY - current->iY > 0)	// 부모가 DL 방향
 		{
-			if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX + 1, current->iY - 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -900,7 +902,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX, current->iY - 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -922,7 +924,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX + 1, current->iY))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -946,7 +948,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 			}
 			if (!isWalkable(current->iX - 1, current->iY) && isWalkable(current->iX - 1, current->iY - 1))
 			{
-				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -971,7 +973,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 			}
 			if (!isWalkable(current->iX, current->iY + 1) && isWalkable(current->iX + 1, current->iY + 1))
 			{
-				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -999,7 +1001,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// DR
 		if ((current->pParent)->iY - current->iY < 0)	// 부모가 UL 방향
 		{
-			if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX + 1, current->iY + 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1021,7 +1023,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX, current->iY + 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1043,7 +1045,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX + 1, current->iY, en_DIR_RR, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX + 1, current->iY))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1067,7 +1069,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 			}
 			if (!isWalkable(current->iX - 1, current->iY) && isWalkable(current->iX - 1, current->iY + 1))
 			{
-				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1092,7 +1094,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 			}
 			if (!isWalkable(current->iX, current->iY - 1) && isWalkable(current->iX + 1, current->iY - 1))
 			{
-				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1124,7 +1126,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// LL
 		if ((current->pParent)->iY - current->iY == 0)	// 부모가 RR 방향이면 
 		{
-			if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX - 1, current->iY))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1147,7 +1149,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 				}
 			}
 			if (!isWalkable(current->iX, current->iY - 1) && isWalkable(current->iX - 1, current->iY - 1))
-				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1171,7 +1173,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			if (!isWalkable(current->iX, current->iY + 1) && isWalkable(current->iX - 1, current->iY + 1))
-				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1198,7 +1200,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// UL
 		if ((current->pParent)->iY - current->iY > 0)	// 부모가 DR 방향
 		{
-			if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX - 1, current->iY - 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1220,7 +1222,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX, current->iY - 1, en_DIR_UU, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX, current->iY - 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1242,7 +1244,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX - 1, current->iY))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1266,7 +1268,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 			}
 
 			if (!isWalkable(current->iX + 1, current->iY) && isWalkable(current->iX + 1, current->iY - 1))
-				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY - 1, en_DIR_UR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1289,7 +1291,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			if (!isWalkable(current->iX, current->iY + 1) && isWalkable(current->iX - 1, current->iY + 1))
-				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1316,7 +1318,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 		// DL
 		if ((current->pParent)->iY - current->iY < 0)	// 부모가 UR 방향
 		{
-			if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX - 1, current->iY + 1, en_DIR_DL, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX - 1, current->iY + 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1338,7 +1340,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX - 1, current->iY, en_DIR_LL, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX - 1, current->iY))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1360,7 +1362,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			}
-			if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY) &&
+			if (Jump(current->iX, current->iY + 1, en_DIR_DD, &iJumpX, &iJumpY, bDomainMark) &&
 				!SearchCloselst(current->iX, current->iY + 1))
 			{
 				pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1384,7 +1386,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 			}
 
 			if (!isWalkable(current->iX, current->iY - 1) && isWalkable(current->iX - 1, current->iY - 1))
-				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX - 1, current->iY - 1, en_DIR_UL, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX - 1, current->iY - 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);
@@ -1407,7 +1409,7 @@ BOOL mylib::CJPS::CheckTile_Around(stArea * current)
 					}
 				}
 			if (!isWalkable(current->iX + 1, current->iY) && isWalkable(current->iX + 1, current->iY + 1))
-				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY) &&
+				if (Jump(current->iX + 1, current->iY + 1, en_DIR_DR, &iJumpX, &iJumpY, bDomainMark) &&
 					!SearchCloselst(current->iX + 1, current->iY + 1))
 				{
 					pTemp = SearchOpenlst(iJumpX, iJumpY);

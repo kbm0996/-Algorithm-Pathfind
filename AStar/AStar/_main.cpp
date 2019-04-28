@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "AStar.h"
 
-#define __PROCESS_RENDER_ // Annotation -> Exclude rendering process
-
 mylib::CAStar g_AStar;
+
 bool g_bCheckObstacle;
+bool g_bViewProcess;
 
 HWND	g_hWnd;
 RECT	g_crt;
@@ -149,23 +149,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONDBLCLK:
 	{
 		StartTick = GetQPCTick();// li);
-#ifndef __PROCESS_RENDER_
-		// No Process
-		g_AStar.PathFind();
-		EndTick = GetQPCTick();// li);
 
-		WCHAR szContent[100] = { 0, };
-		swprintf_s(szContent, L"Consumed time : %8.6f s", (float)((EndTick - StartTick) / (float)li.QuadPart));
-		MessageBox(hWnd, szContent, L"Result", MB_OK | MB_ICONINFORMATION);
-#else
-		// Process
-		g_AStar.Clear_Process();
-		hTimer = (HANDLE)SetTimer(hWnd, 1, USER_TIMER_MINIMUM, NULL); // Set Timer(ID:1)
-		SendMessage(hWnd, WM_TIMER, 1, 0); // Activate Timer(ID:1)
-		bTimer = true;
-#endif
-		break;
+		if (!g_bViewProcess)
+		{
+			// No Process
+			g_AStar.PathFind();
+			EndTick = GetQPCTick();// li);
+
+			WCHAR szContent[100] = { 0, };
+			swprintf_s(szContent, L"Consumed time : %8.6f s", (float)((EndTick - StartTick) / (float)li.QuadPart));
+			MessageBox(hWnd, szContent, L"Result", MB_OK | MB_ICONINFORMATION);
+		}
+		else
+		{
+			// Process
+			g_AStar.Clear_Process();
+			hTimer = (HANDLE)SetTimer(hWnd, 1, USER_TIMER_MINIMUM, NULL); // Set Timer(ID:1)
+			SendMessage(hWnd, WM_TIMER, 1, 0); // Activate Timer(ID:1)
+			bTimer = true;
+		}
 	}
+	break;
 	case WM_TIMER:
 		if (bTimer)
 		{
@@ -187,6 +191,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case ID_RESET:
 			g_AStar._pCMap->ResetObstacle();
+			break;
+		case ID_VIEWPROCESS:
+			if (!g_bViewProcess)
+				g_bViewProcess = true;
+			else
+				g_bViewProcess = false;
 			break;
 		}
 		break;

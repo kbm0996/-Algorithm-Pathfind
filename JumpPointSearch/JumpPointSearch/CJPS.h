@@ -82,8 +82,8 @@ namespace mylib
 		stArea* SearchOpenlst(int x, int y);
 		stArea* SearchCloselst(int x, int y);
 
-		BOOL Jump(int x, int y, en_DIR_JUMP enDir, int * pOutX, int * pOutY);
-		BOOL CheckTile_Around(stArea * current);
+		BOOL Jump(int x, int y, en_DIR_JUMP enDir, int * pOutX, int * pOutY, bool bDomainMark);
+		BOOL CheckTile_Around(stArea * current, bool bDomainMark);
 
 		void	RandColor_JumpDomain();
 		void	GetBresenhamPath(stArea * pDestNode);

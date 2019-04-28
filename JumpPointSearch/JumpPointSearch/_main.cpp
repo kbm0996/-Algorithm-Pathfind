@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "JumpPointSearch.h"
 
-#define __PROCESS_RENDER_ // Annotation -> Exclude rendering process
-
 mylib::CJPS g_JPS;
 BOOL g_bCheckObstacle;
+BOOL g_bViewCheckTile;
+BOOL g_bViewProcess;
 
 HWND	g_hWnd;
 RECT	g_crt;
@@ -151,28 +151,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONDBLCLK:
 	{
 		StartTick = GetQPCTick();// li);
-#ifndef __PROCESS_RENDER_
-								 // No Process
-		g_JPS.PathFind();
-		EndTick = GetQPCTick();// li);
+		
+		if (!g_bViewProcess)
+		{						
+			// No Process
+			g_JPS.PathFind(g_hMemDC, true, 0, g_bViewCheckTile);
+			EndTick = GetQPCTick();// li);
 
-		WCHAR szContent[100] = { 0, };
-		swprintf_s(szContent, L"Consumed time : %8.6f s", (float)((EndTick - StartTick) / (float)li.QuadPart));
-		MessageBox(hWnd, szContent, L"Result", MB_OK | MB_ICONINFORMATION);
-#else
-								 // Process
-		g_JPS.Clear();
-		hTimer = (HANDLE)SetTimer(hWnd, 1, USER_TIMER_MINIMUM, NULL); // Set Timer(ID:1)
-		SendMessage(hWnd, WM_TIMER, 1, 0); // Activate Timer(ID:1)
-		bTimer = true;
-#endif
+			WCHAR szContent[100] = { 0, };
+			swprintf_s(szContent, L"Consumed time : %8.6f s", (float)((EndTick - StartTick) / (float)li.QuadPart));
+			MessageBox(hWnd, szContent, L"Result", MB_OK | MB_ICONINFORMATION);
+		}
+		else
+		{
+			// Process
+			g_JPS.Clear();
+			hTimer = (HANDLE)SetTimer(hWnd, 1, USER_TIMER_MINIMUM, NULL); // Set Timer(ID:1)
+			SendMessage(hWnd, WM_TIMER, 1, 0); // Activate Timer(ID:1)
+			bTimer = true;
+		}
 
 		break;
 	}
 	case WM_TIMER:
 		if (bTimer)
 		{
-			if (g_JPS.PathFind_Process(g_hMemDC))
+			if (g_JPS.PathFind_Process(g_hMemDC, true, 0, g_bViewCheckTile))
 			{
 				bTimer = false;
 				KillTimer(hWnd, 1);	// Off Timer(ID:1)
@@ -186,10 +190,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_COMMAND:
 	{
+		HMENU hmenu = GetMenu(hWnd);
+		MENUITEMINFO menuItem = { 0 };
+		menuItem.cbSize = sizeof(MENUITEMINFO);
+		menuItem.fMask = MIIM_STATE;
+
 		switch (LOWORD(wParam))
 		{
 		case ID_RESET:
 			g_JPS._pCMap->ResetObstacle();
+			break;
+		case ID_OPTION_VIEWCHECKTILE:
+			GetMenuItemInfo(hmenu, ID_OPTION_VIEWCHECKTILE, FALSE, &menuItem);
+			if (!g_bViewCheckTile)
+			{
+				menuItem.fState = MFS_CHECKED;
+				g_bViewCheckTile = true;
+			}
+			else
+			{
+				menuItem.fState = MFS_UNCHECKED;
+				g_bViewCheckTile = false;
+			}
+			SetMenuItemInfo(hmenu, ID_OPTION_VIEWCHECKTILE, FALSE, &menuItem);
+			break;
+		case ID_OPTION_VIEWPROCESS:
+			GetMenuItemInfo(hmenu, ID_OPTION_VIEWPROCESS, FALSE, &menuItem);
+			if (!g_bViewProcess)
+			{
+				menuItem.fState = MFS_CHECKED;
+				g_bViewProcess = true;
+			}
+			else
+			{
+				menuItem.fState = MFS_UNCHECKED;
+				g_bViewProcess = false;
+			}
+			SetMenuItemInfo(hmenu, ID_OPTION_VIEWPROCESS, FALSE, &menuItem);
 			break;
 		}
 		break;
