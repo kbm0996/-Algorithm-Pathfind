@@ -9,6 +9,7 @@
  
  ## 🅿 개념
  출처 -  https://egloos.zum.com/cozycoz/v/9748811
+ https://itmining.tistory.com/66
  
  ### 1. 범위 찾기(The Search Area)
    녹색은 출발지점A, 빨간색은 도착지점B, 그리고 파란색으로 채워진 사각형은 양쪽사이에 있는 벽입니다.
