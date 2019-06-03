@@ -8,7 +8,7 @@
 
  
  ## 🅿 개념
- 참고 자료  - https://itmining.tistory.com/66
+ 참고 자료(원본)  - https://itmining.tistory.com/66
  
  ### 1. 범위 찾기(The Search Area)
  * 녹색은 `출발지점A`, 빨간색은 `도착지점B`, 그리고 파란색은 `벽`을 의미
