@@ -1,101 +1,59 @@
 # JPS(JumpPointSearch) + Bresenham's Line
 ## 📢 개요
 
- A* 알고리즘이 한 그리드에서 다음 그리드와 같이 작은 단위로 고려했던 것과 달리 그리드의 직선(수평, 수직 및 대각선)을 따라 긴 점프를 고려하여 최단거리를 찾아낸다. 따라서 JPS는 A*의 원리를 유지하면서 실행 시간을 획기적으로 줄일 수 있다.
+ A* 알고리즘이 한 그리드에서 다음 그리드와 같이 작은 단위로 고려했던 것과 달리 그리드의 직선(수평, 수직 및 대각선)을 따라 긴 점프를 고려하여 최단거리를 찾아낸다. 따라서 JPS는 A*에 비해 최단 거리를 찾는 데 필요한 노드 수를 획기적으로 줄일 수 있다.
  
   >![capture](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/GIF.gif)
   >*figure 1. JPS(animated gif)
 
  
  ## 🅿 개념
- 출처 - https://harablog.wordpress.com/2011/09/07/jump-point-search/, https://joonleestudio.tistory.com/28
+ 
+ 원본 출처 - https://zerowidth.com/2013/05/05/jump-point-search-explained.html
  
--
- 
- ### 1. 범위 찾기(The Search Area)
- * 녹색은 `출발지점A`, 빨간색은 `도착지점B`, 그리고 파란색은 `벽`을 의미
-
-  ![1](http://pds11.egloos.com/pds/200905/25/42/a0118142_4a1a3cd65c3d0.jpg)
+ ### 경로 확장과 대칭 줄이기 (Path Expansion and Symmetry Reduction)
+ * 녹색은 `출발지점A`, 빨간색은 `도착지점B`, 그리고 검은색은 `벽`을 의미
   
   먼저, 위와 같이 탐색 지역을 2차원 배열로 단순화한다. 배열의 각 항목은 사각형이며 사각형은 이동 가능 또는 이동 불가능으로 나뉘어진다.
-
- ### 2. 탐색 시작 (Starting the Search)
- `출발지점A`로부터 `도착지점B`까지 인접 사각형을 아래 일련의 과정을 거치면서 길을 만든다.
- 
- >1. `출발지점A`를 **열린 목록(Openlist)** 에 넣는다.
- >
- >2. `출발지점A`에 인접한 사각형 중 이동 가능한 것들을 **열린 목록(Openlist)** 에 넣는다. 이 사각형들은 `출발지점A`를 부모로 지정한다. ('부모 사각형'은 길을 다 찾고 거슬러 올라갈 때 사용된다.)
- >
- >3. **열린 목록(Openlist)** 에 넣었던 `출발지점A`을 빼고 **닫힌 목록(Closelist)** 에 넣는다. 
-
-  ![2](https://t1.daumcdn.net/cfile/tistory/27450F4B5938EC6B0D)
   
-  위 그림처럼 나타낼 수 있다. 
+  ![1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1.PNG)
   
-  `출발지점A`의 테두리가 하늘색인 것은 **닫힌 목록(Closelist)** 에 들어있음을 의미한다. 닫힌 목록에 있는 사각형들은 검증이 끝나서 다시 검증할 필요가 없으므로 무시한다.
+  ![2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2.PNG)
   
-  `출발지점A`에 인접한 8개의 사각형의 테두리가 녹색인 것은 **열린 목록(Openlist)** 에 들어있음을 의미한다. 그리고 각각 회색 포인트의 방향은 부모 사각형이 있는 방향이다.
- 
- ### 3. 경로 채점 (Path Scoring) 
- 휴리스틱(Heuristic) 함수를 이용한다. 
- 
- ***F = G + H***
- 
- >- G : `출발지점A`로부터 현재 사각형까지 경로를 따라 이동하는데 소모되는 비용
- >- H : 현재 사각형에서 `도착지점B`까지 경로를 따라 이동하는데 소모되는 예상 비용
- >- F : 이동하는데 걸린 비용과 예상 비용을 합친 총 비용 (G + H)
- 
- ***G*** 는 이 설명의 예에서는 수직, 수평 이동에 대해선 10, 대각선 이동에 대해서는 14의 비용을 할당한다. 대각선으로 이동하는 실제 거리는 피타고라스 공식으로 수평 또는 수직 이동 비용의 약 1.414 배이기 때문에 간단히 14를 사용하기로 했다.
-
- ***H*** 는 이 설명의 예에서는 맨하탄(Manhattan) 방법을 사용한다. 이 방법은 현재 사각형에서 `도착지점B`에 도달하기 위해 대각선 운동과 장애물은 무시하고 수평, 수직 이동 비용만 계산한다. 어떤 사각형에서 목표까지 수평, 수직 이동의 개수에 10을 더하면 되는 것이다.
- 
- ***F*** 는 G와 H를 더한다. 이 공식을 통해서 어떤 경로가 가장 비용이 저렴한지 채점한다.
- 
-  ![3](https://t1.daumcdn.net/cfile/tistory/272092415938F90C06)
- 
- 위 예에서 G는 스타팅 포인트로부터 수평으로 1칸 이동했으니 10, H는 현재 사각형으로부터 목표 포인트까지 수평으로 3번 이동했으니 10을 곱해 30이 되는 것이다. 총 합 비용인 F는 10 + 30 = 40
+  ![2b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2b.PNG)
   
-  ![4](https://t1.daumcdn.net/cfile/tistory/226337435938FA2F1E)
- 
- 위 예에서 G는 스타팅 포인트로부터 대각선 방향에 있으므로 14이다. (대각선 이동을 고려하지 않기로 정했더라도 G는 시작 위치로부터 현재 위치의 실제 거리를 알기 때문에 대각선을 포함하여 계산한다.) H는 4칸 이동이므로 40. F는 총 합이므로 54.
-
-
- ### 4. 계속 탐색하기 (Continuing the Search)
- 
- >1. **열린 목록(Openlist)** 에서 가장 작은 F 비용을 가지고 있는 사각형을 빼고 **닫힌 목록(Closelist)** 에 넣는다.
- >
- >2. 선택한 사각형에 인접한 사각형을 확인한다(**닫힌 목록(Closelist)** 에 있거나 벽은 무시). 해당 인접한 사각형이 **열린 목록(Openlist)** 에 없다면 추가한다. 그리고 현재 사각형을 새로운 사각형의 부모로 지정한다. 
- >
- >3. 인접한 사각형이 이미 **열린 목록(Openlist)** 에 있다면 해당 사각형의 비용이 더 좋은지 확인한다. 즉, 선택한 사각형과 비교하여 어느 사각형의 G 비용이 더 낮은지 확인한다. 그리고 인접한 사각형들의 부모를 G 비용이 낮게 검증된 사각형으로 바꾼다. 
-
-
- * 녹색은 `출발지점A`, 빨간색은 `도착지점B`, 그리고 파란색은 `벽`을 의미
-
- ![5](https://t1.daumcdn.net/cfile/tistory/2463BC4B5938EC6A03)
- 1. 최초 9개의 사각형 중 녹색 사각형(`출발지점A`)을 **닫힌 목록(Closelist)** 에 넣은 후 8개의 인접 사각형을 **열린 목록(Openlist)** 에 넣는다. 
- 
- 2. 가장 작은 비용인 오른쪽 사각형(하늘색 테두리)을 선택한다.
- 
-  해당 사각형 오른쪽의 파란색 사각형은 벽이므로 무시한다. 그리고 왼쪽 녹색 사각형(`출발지점A`)는 **닫힌 목록(Closelist)** 에 있으므로 무시한다. 
- 
-  나머지 4개의 사각형들은 **열린 목록(Closelist)** 에 있으므로 G를 기준으로 비용 검사를 해야한다. 위, 아래에 있는 사각형들의 G가 14이다. 현재 선택한 사각형을 거치게 되면 20으로 늘어난다(수평1, 수직1이므로). 경로 비용이 개선되는 사각형이 없으므로 경로를 개선하지 않는다.
- 
- 3. `출발지점A` 기준에서 가장 작은 G 값을 가진 오른쪽 상단, 오른쪽 하단의 사각형 중 하나를 선택하여 다음 사각형으로 진행한다(두 사각형 중 마지막에 추가한 사각형을 탐색하는 것이 빠르다).
- 
- ![6](https://t1.daumcdn.net/cfile/tistory/2412F04B5938EC6A3E)
- 
- 4. 우하단 사각형으로 진행한 상태
- 
-  2단계와 마찬가지로 선택한 사각형의 오른쪽과 오른쪽 상단 파란색 사각형은 벽이므로 무시한다. 또한 벽 아래 사각형도 무시한다(개발 방법에 따라 다르지만, 해당 설명의 예시에서는 현재 사각형 위치에서 벽 아래로 이동하려면 사각형이 대각선 모양으로 잘려야 부딪히지 않으므로 제외). 그리고 왼쪽 상단, 상단 사각형은 이미 **닫힌 목록(Closelist)** 에 있으므로 무시한다.
   
-  왼쪽 사각형은 이미 **열린 목록(Openlist)** 에 있으므로 G값을 통해 비교한다. 나머지 왼쪽 하단, 하단 사각형은 **열린 목록(Openlist)** 에 새로 넣고 3,4단계를 반복한다.
-   
- ![7](https://t1.daumcdn.net/cfile/tistory/2511BD4B5938EC691A)
- 
-  선택한 사각형 왼쪽 하단에 있는 사각형의 화살표가 이전과 바뀌었다. 이전의 G값은 28이었으나 지금은 20이고 상단 사각형을 가리키고 있다. 이전과 같이 더 적은 비용 검사를 통해 부모가 바뀌고, G와 F 비용이 다시 계산된 것이다. 일련의 과정을 반복하면 아래 그림처럼 길이 완성된다.
   
- ![8](https://t1.daumcdn.net/cfile/tistory/222BC74B5938EC6918)
+  ![2-6](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b6.PNG)
+  
+  ![2-7](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b7.PNG)
+  
+  ![2=8](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b8.PNG)
+  
+  ![2-9](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b9.PNG)
+  
+  ![2-10](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b10.PNG)
+  
+  
+  
+  ![2-1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c1.PNG)
+  
+  ![2-2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c2.PNG)
+  
+  ![2-3](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c3.PNG)
+  
+  ![2-4](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c4.PNG)
+  
+  ![2-5](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c5.PNG)
+  
+  ![2-6](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c6.PNG)
+  
+  ![2-7](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c7.PNG)
+  
+  ![2=8](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c8.PNG)
+  
+  ![2-9](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c9.PNG)
+  
+  ![2-10](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c10.PNG)
 
- 5. 길 저장하기
- 
-  `도착지점B`로부터 각각의 사각형의 부모 사각형을 향하여 시작 사각형에 도착할 때까지 거슬러 올라가면 된다.
+
