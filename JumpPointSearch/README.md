@@ -11,17 +11,29 @@
  
  원본 출처 - https://zerowidth.com/2013/05/05/jump-point-search-explained.html
  
- ### 경로 확장과 대칭 줄이기 (Path Expansion and Symmetry Reduction)
- * 녹색은 `출발지점A`, 빨간색은 `도착지점B`, 그리고 검은색은 `벽`을 의미
+ ### A* 리뷰
+ 
+ A* 알고리즘은 단순하게 열린 목록(Openlist)에 도착지점의 그리드가 들어올 때까지 아래와 같은 단계를 밟으면서 경로를 찾는다.
+ 
+  >1. **열린 목록(Openlist)** 에서 가장 작은 F 비용을 가지고 있는 그리드를 빼고 **닫힌 목록(Closelist)** 에 넣는다.
+  >
+  >2. 선택한 그리드에 인접한 그리드들을 확인한다(**닫힌 목록(Closelist)** 에 있거나 벽은 무시). 인접한 그리드가 **열린 목록(Openlist)** 에 없다면 추가한다. 그리고 현재 그리드를 새로운 그리드의 부모로 지정한다. 
+  >
+  >3. 인접한 그리드가 이미 **열린 목록(Openlist)** 에 있다면 해당 그리드의 비용이 더 좋은지 확인한다. 즉, 선택한 그리드와 비교하여 어느 그리드의 G 비용이 더 낮은지 확인한다. 그리고 인접한 그리드들의 부모를 G 비용이 낮게 검증된 그리드로 바꾼다. 
+ 
+  * 녹색은 `출발지점A`, 빨간색은 `도착지점B`, 그리고 검은색은 `벽`을 의미
   
-  먼저, 위와 같이 탐색 지역을 2차원 배열로 단순화한다. 배열의 각 항목은 사각형이며 사각형은 이동 가능 또는 이동 불가능으로 나뉘어진다.
+  >![1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1.png)
+  >*figure 2. A* 수직, 수평 탐색
   
-  ![1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1.PNG)
+  >![1b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1b.PNG)
+  >*figure 3. A* 수직, 수평 탐색 + 장애물
   
-  ![2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2.PNG)
+  >![2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2.png)
+  >*figure 4. A* 대각선 탐색
   
-  ![2b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2b.PNG)
-  
+  >![2b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2b.PNG)
+  >*figure 5. A* 대각선 탐색 + 장애물
   
   
   ![2-6](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b6.PNG)
