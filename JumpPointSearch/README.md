@@ -24,15 +24,19 @@
   * 녹색은 `출발지점A`, 빨간색은 `도착지점B`, 그리고 검은색은 `벽`을 의미
   
   >![1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1.png)
+  >
   >*figure 2. A* 수직, 수평 탐색
   
   >![1b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1b.PNG)
+  >
   >*figure 3. A* 수직, 수평 탐색 + 장애물
   
   >![2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2.png)
+  >
   >*figure 4. A* 대각선 탐색
   
   >![2b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2b.PNG)
+  >
   >*figure 5. A* 대각선 탐색 + 장애물
   
   
