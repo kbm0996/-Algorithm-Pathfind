@@ -16,9 +16,9 @@
   
   먼저, 위와 같이 탐색 지역을 2차원 배열로 단순화한다. 배열의 각 항목은 사각형이며 사각형은 이동 가능 또는 이동 불가능으로 나뉘어진다.
   
-  ![1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1.PNG)
+  ![1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1.png)
   
-  ![2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2.PNG)
+  ![2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2.png)
   
   ![2b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2b.PNG)
   
