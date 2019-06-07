@@ -11,6 +11,8 @@
  * A* 리뷰 그림, JPS 그림 출처 - https://zerowidth.com/2013/05/05/jump-point-search-explained.html
  * 강제 이웃 설명 및 그림 출처 - https://joonleestudio.tistory.com/28
  
+ ___
+ 
  ### A* 리뷰
  
  A* 알고리즘은 단순하게 열린 목록(Openlist)에 도착지점의 그리드가 들어올 때까지 아래와 같은 단계를 밟으면서 경로를 찾는다.
@@ -39,7 +41,7 @@
   >
   >*figure 5. A** 대각선 탐색 + 장애물
   
-  
+ ___
   
  ### 강제 이웃(Forced Neighbor) 
   
@@ -53,7 +55,8 @@
   
   ![2-10](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b10.PNG)
   
-  
+ ___
+ 
  ### JPS
   
   ![2-1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c1.PNG)
