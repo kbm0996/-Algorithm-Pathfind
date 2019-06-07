@@ -40,6 +40,9 @@
   >*figure 5. A** 대각선 탐색 + 장애물
   
   
+  
+ ### 강제 이웃(Forced Neighbor) 
+  
   ![2-6](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b6.PNG)
   
   ![2-7](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b7.PNG)
@@ -51,6 +54,7 @@
   ![2-10](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b10.PNG)
   
   
+ ### JPS
   
   ![2-1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c1.PNG)
   
