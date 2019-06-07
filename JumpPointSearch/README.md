@@ -8,7 +8,6 @@
 
  
  ## 🅿 개념
- 
  * A* 리뷰 그림, JPS 그림 출처 - https://zerowidth.com/2013/05/05/jump-point-search-explained.html
  * 강제 이웃 설명 및 그림 출처 - https://joonleestudio.tistory.com/28
  
