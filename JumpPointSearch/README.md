@@ -9,7 +9,6 @@
  
  ## 🅿 개념
  * A* 리뷰 그림, JPS 그림 출처 - https://zerowidth.com/2013/05/05/jump-point-search-explained.html
- * 강제 이웃 설명 및 그림 출처 - https://joonleestudio.tistory.com/28
  
  ___
  
@@ -29,21 +28,24 @@
   >
   >*figure 2. A** 수직, 수평 탐색
   
-  >![1b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1b.PNG)
-  >
-  >*figure 3. A** 수직, 수평 탐색 + 장애물
-  
   >![2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2.png)
   >
-  >*figure 4. A** 대각선 탐색
+  >*figure 3. A** 대각선 탐색
+
+ ___
+  
+ ### 강제 이웃(Forced Neighbor) 
+ 
+  >![1b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/1b.PNG)
+  >
+  >*figure 4. A** 수직, 수평 탐색 + 장애물
   
   >![2b](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2b.PNG)
   >
   >*figure 5. A** 대각선 탐색 + 장애물
   
- ___
-  
- ### 강제 이웃(Forced Neighbor) 
+ 위 두 그림은 일직선의 탐색 경로 상에 장애물이 있다는 상황을 가정한 것이다. 
+ 근처의 다른 경로를 탐색할 때 해당 **장애물에 인접한 노드(보라색 그리드)** 에서 탐색을 중지하고 그 노드를 기준으로 탐색을 재개해야 한다. 이렇게 한 번에 도달할 수 없지만 경우해야만 하는 노드를 JPS 논문에서 `강제 이웃(Forced Neighbor)`이라고 한다.
   
   ![2-6](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b6.PNG)
   
