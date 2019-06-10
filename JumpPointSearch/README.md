@@ -62,33 +62,51 @@
   
   ![2-10](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-b10.PNG)
   
-   이 시점에서 현재 노드를 **열린 목록(Openlist)** 에 넣고, 현재 노드를 기준으로 탐색을 계속한다.
+   이 시점에서 **현재 노드**와 **탐색 경로 상의 `강제 이웃`과 인접한 노드**를 **열린 목록(Openlist)** 에 넣고 수평 탐색을 종료한다. 그리고 현재 노드의 탐색을 계속한다.
    
    
    이를 A* 알고리즘에서 열린 목록의 노드를 검사할 때마다 적용한다. 그러면 주변의 모든 노드를 검사했던 기존의 중간 단계를 모두 생략하고 새로운 탐색 노드들이 열린 목록에 들어가게 된다.
   
  ___
  
- ### JPS 
+ ### JPS 예제
   
   ![2-1](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c1.PNG)
   
+   위의 강제 노드 예시와 같은 지도이다.
+  
   ![2-2](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c2.PNG)
+  
+   이전에 식별된 노드(열린 목록의 유일한 노드)에서 시작. 먼저, 수직 방향으로 탐색했으나 지도의 가장자리에 닿을 때까지 아무 경로도 찾지 못한다.
   
   ![2-3](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c3.PNG)
   
+   수평 방향으로 탐색하여 `강제 노드`(보라색 노드)를 찾고 **현재 노드**와 **탐색 경로 상에 있던 `강제 노드`와 인접한 노드**를 **열린 목록**에 넣는다.
+  
   ![2-4](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c4.PNG)
+  
+   대각선 방향으로 탐색했으나 지도의 가장자리에 부딪혀 아무 경로도 찾지 못한다.
   
   ![2-5](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c5.PNG)
   
+   탐색이 끝난 노드는 열린 목록에서 빼고 **닫힌 목록(Closelist)** 에 넣는다. 그리고 열린 목록에 남아있는 다른 노드로 탐색을 시작한다. 먼저, 이 노드에 도달했을 때 수평 탐색으로 도달했으므로 수평 탐색을 먼저 한다. 하지만 지도의 가장자리에 부딪혀 아무 경로도 찾지 못한다.
+  
   ![2-6](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c6.PNG)
+  
+   `강제 이웃`이 있던 방향으로 탐색을 확장하고, 대각선 점프 규칙에 따라 여태까지 그래왔던 것처럼 대각선으로 이동한 다음 수직 및 수평으로 탐색한다.
   
   ![2-7](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c7.PNG)
   
+   아무것도 찾지 못했으므로, 대각선으로 다시 탐색한다.
+  
   ![2=8](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c8.PNG)
+  
+   이제 수평(이제 갈 곳 없음) 및 수직으로 확장하면 목표 노드가 보인다. 강제 이웃을 발견한 것과 마찬가지로 현재 노드를 **열린 목록**에 넣는다.
   
   ![2-9](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c9.PNG)
   
+   마지막으로 열린 목록에 목표를 넣는다.
+  
   ![2-10](https://github.com/kbm0996/-Algorithm-Pathfind/blob/master/JumpPointSearch/jpg/2-c10.PNG)
 
-
+   이제 각 노드의 부모를 따라가면 최적화된 길을 알아낼 수 있다.
